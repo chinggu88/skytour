@@ -1,0 +1,40 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --ink: #1a1a1a;
+  --ink-2: #555555;
+  --line: #e5e5e5;
+}
+
+body {
+  font-family: -apple-system, "Segoe UI", "Noto Sans KR", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+nav {
+  border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.nav-inner {
+  max-width: 1100px; margin: 0 auto;
+  padding: 22px 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 24px;
+}
+
+.logo { font-weight: 800; letter-spacing: -0.02em; font-size: 15px; text-decoration: none; color: var(--ink); }
+.logo .dot { color: #888888; }
+
+.tabs { display: flex; gap: 32px; }
+.tab { font-size: 13px; color: var(--ink-2); text-decoration: none; padding-bottom: 6px; white-space: nowrap; }
+.tab.active { color: var(--ink); }
+
+main { max-width: 1100px; margin: 0 auto; padding: 32px; }
+.page h1 { margin-bottom: 12px; }
+.page p { color: var(--ink-2); max-width: 640px; margin-bottom: 8px; }
