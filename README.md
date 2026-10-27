@@ -59,9 +59,12 @@ src/
 ├── index.css           # 전역 스타일 / 디자인 토큰
 ├── components/         # 공통 컴포넌트 (Header 등)
 ├── pages/              # 페이지 (Home / About / Fleet / Contact)
-│   ├── Home.jsx        # 1번 골격: 히어로·핵심 숫자·관리 3축·차량 요약·견적 CTA
-│   ├── About.jsx       # 인사말·연혁·임원·비전
-│   ├── Fleet.jsx       # 보유 차량 30대 및 차량 관리
+│   ├── Home.jsx        # 4번 브랜드 스토리 중심: 스토리 히어로·왜 우리인가·숫자
+│   ├── About.jsx       # 인사말·연혁 타임라인·임원·비전
+│   ├── Story.jsx       # 브랜드 스토리 4장: 정복·젊은 승무 사원·교육·차량
+│   ├── Gallery.jsx     # 현장 사진 자리 (원본 사진 미제공으로 플레이스홀더)
+│   ├── Recruitment.jsx # 승무 사원 채용·채용 절차
+│   ├── Fleet.jsx       # 보유 차량 30대 및 차량 관리 (네비게이션 미노출, 링크 접근)
 │   └── Contact.jsx     # 2번 견적 문의 폼 (연락처 확정 전에는 발송 없는 정리용)
 ├── api/                # API 통신 모듈
 ├── hooks/              # 커스텀 훅
