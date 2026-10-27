@@ -5,6 +5,8 @@ const chapters = [
     no: '01',
     title: '정복 — 단정함부터가 서비스',
     body: '깔끔한 정복 착용을 기본으로 합니다. 세탁비를 지원하고 명찰·견장·넥타이까지 단정하게 갖춥니다. 고객이 처음 마주하는 기사의 모습이 곧 회사의 첫인상이라고 믿기 때문입니다.',
+    photo: 'photos/crew-buses.jpg',
+    photoAlt: '정복을 입은 승무 사원들과 보유 버스',
   },
   {
     no: '02',
@@ -15,11 +17,15 @@ const chapters = [
     no: '03',
     title: '교육 — 서비스는 훈련에서 나온다',
     body: '서비스 정기 교육을 연 4회 실시하고, 안전 교육과 법정 의무 교육(외부 강사)도 빠짐없이 진행합니다. 차량 청결과 복장 단정 교육은 기본, 연말 시상으로 서비스 마인드를 독려합니다.',
+    photo: 'photos/training.jpg',
+    photoAlt: '서비스 교육과 안전 교육 현장',
   },
   {
     no: '04',
     title: '차량 — 준비된 차량만이 출발한다',
     body: '지정 정비업체를 통해 체계적으로 관리하고 정비 내역을 철저히 체크합니다. 외부 도색 유지보수도 놓치지 않습니다. 긴급 상황에는 비상 투입 인력이 대기하고, 예비 차량은 10대당 1대 비율로 현재 3대를 비치하고 있습니다.',
+    photo: 'photos/garage.jpg',
+    photoAlt: '정비소에서 관리 중인 보유 차량',
   },
 ]
 
@@ -37,6 +43,11 @@ export default function Story() {
           <div>
             <h2>{c.title}</h2>
             <p>{c.body}</p>
+            {c.photo && (
+              <figure className="story-photo">
+                <img src={`${import.meta.env.BASE_URL}${c.photo}`} alt={c.photoAlt} />
+              </figure>
+            )}
           </div>
         </article>
       ))}
