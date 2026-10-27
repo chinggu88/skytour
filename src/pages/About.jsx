@@ -23,6 +23,12 @@ export default function About() {
         2022년 설립 이후 차량을 늘려가며, 2024년에는 뉴모던스카이투어까지
         세웠습니다. 지금은 플랫폼 사업으로 안정적인 차량 수급을 준비하고 있습니다.
       </p>
+      <div className="stats">
+        <div className="stat"><strong>30대</strong><span>보유 차량 (2024.07 기준)</span></div>
+        <div className="stat"><strong>2022.07</strong><span>법인 설립</span></div>
+        <div className="stat"><strong>연 4회</strong><span>서비스 정기 교육</span></div>
+        <div className="stat"><strong>3대</strong><span>예비 차량</span></div>
+      </div>
 
       <h2>회사 연혁</h2>
       <ol className="timeline">
