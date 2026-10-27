@@ -13,7 +13,9 @@ export default function Header() {
         <div className="tabs">
           <NavLink to="/" className={tabClass}>Home</NavLink>
           <NavLink to="/about" className={tabClass}>회사 소개</NavLink>
-          <NavLink to="/fleet" className={tabClass}>보유 차량</NavLink>
+          <NavLink to="/story" className={tabClass}>브랜드 스토리</NavLink>
+          <NavLink to="/gallery" className={tabClass}>갤러리</NavLink>
+          <NavLink to="/recruitment" className={tabClass}>채용</NavLink>
           <NavLink to="/contact" className={tabClass}>견적 문의</NavLink>
         </div>
       </div>
