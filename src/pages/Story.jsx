@@ -36,6 +36,20 @@ export default function Story() {
       <p className="lead">
         모던스카이투어가 지키는 네 가지 약속입니다.
       </p>
+      <div className="summary-cards">
+        <article className="card">
+          <h3>정복, 단정한 첫인상</h3>
+          <p>깔끔한 정복 착용, 명찰·견장·넥타이, 세탁비 지원. 단정함부터가 서비스입니다.</p>
+        </article>
+        <article className="card">
+          <h3>젊은 승무 사원</h3>
+          <p>30~50대 젊은 승무 사원 채용, 자체 밴드 소통, 체계적인 배차와 운영.</p>
+        </article>
+        <article className="card">
+          <h3>준비된 차량</h3>
+          <p>지정 정비업체 관리, 정비 내역 체크, 예비 차량 3대 비치. 긴급 상황에도 비상 투입합니다.</p>
+        </article>
+      </div>
 
       {chapters.map((c) => (
         <article className="story" key={c.no}>
