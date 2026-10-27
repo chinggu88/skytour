@@ -16,6 +16,10 @@ export default function Home() {
           <Link className="button primary" to="/story">브랜드 스토리 보기</Link>
           <Link className="button" to="/contact">견적 문의하기</Link>
         </div>
+        <figure className="hero-photo">
+          <img src={`${import.meta.env.BASE_URL}photos/crew-buses.jpg`} alt="정복을 입은 모던스카이투어 승무 사원들과 보유 버스" />
+          <figcaption>정복을 입은 승무 사원들과 보유 차량 — 회사 소개 자료의 실제 현장 사진입니다 (차량 번호판은 블러 처리했습니다).</figcaption>
+        </figure>
       </section>
 
       <section className="section">
