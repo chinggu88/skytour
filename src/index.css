@@ -150,3 +150,9 @@ body { overflow-x: hidden; }
 @media (max-width: 700px) {
   .summary-cards { grid-template-columns: 1fr; }
 }
+
+.list-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.list-head h1 { margin-bottom: 12px; }
+.inquiry-list { display: grid; gap: 16px; margin-top: 16px; }
+.inquiry-card h3 { margin-bottom: 8px; }
+.row-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
