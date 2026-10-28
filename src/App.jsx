@@ -7,6 +7,7 @@ import Gallery from './pages/Gallery'
 import Recruitment from './pages/Recruitment'
 import Fleet from './pages/Fleet'
 import Contact from './pages/Contact'
+import ContactWrite from './pages/ContactWrite'
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
           {/* Fleet은 네비게이션에 노출하지 않고 Home/Story 링크로만 접근 */}
           <Route path="/fleet" element={<Fleet />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/contact/write" element={<ContactWrite />} />
+          <Route path="/contact/write/:id" element={<ContactWrite />} />
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </main>
