@@ -44,7 +44,7 @@ export default function Contact() {
       {error && (
         <div className="card">
           <h2>목록을 불러오지 못했습니다.</h2>
-          <p>Supabase에 inquiries 테이블과 조회 정책이 아직 만들어지지 않았을 수 있습니다. SQL을 실행한 뒤 새로고침해 주세요.</p>
+          <p>Supabase에 skytour_inquiries 테이블과 조회 정책이 아직 만들어지지 않았을 수 있습니다. SQL을 실행한 뒤 새로고침해 주세요.</p>
           <p className="note">{error}</p>
         </div>
       )}
