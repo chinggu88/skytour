@@ -177,3 +177,19 @@ body { overflow-x: hidden; }
 .mail-icon-btn { background: none; border: none; font-size: 18px; padding: 8px; cursor: pointer; border-radius: 8px; color: var(--ink-2); }
 .mail-icon-btn:hover { background: var(--bg-warm); }
 .mail-spacer { flex: 1; }
+
+/* 갤러리 상세화면 (밴드 게시글 구조) */
+.detail-header { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 20px; }
+.detail-back { background: none; border: 1px solid var(--line); border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; }
+.detail-menu-wrap { position: relative; margin-left: auto; }
+.detail-menu-btn { background: none; border: none; font-size: 22px; cursor: pointer; padding: 4px 8px; }
+.detail-menu { position: absolute; right: 0; top: 36px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 4px; z-index: 2; display: flex; flex-direction: column; min-width: 100px; }
+.detail-menu a, .detail-menu button { background: none; border: none; padding: 8px 12px; cursor: pointer; font: inherit; text-align: left; text-decoration: none; color: var(--ink); }
+.detail-author { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.detail-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
+.detail-author strong { display: block; }
+.detail-meta { display: block; color: var(--ink-2); font-size: 13px; }
+.detail-title { font-size: 26px; line-height: 1.4; margin-bottom: 16px; }
+.detail-body { white-space: pre-wrap; line-height: 1.8; margin-bottom: 20px; }
+.detail-photo { margin: 0 0 20px; }
+.detail-photo img { width: 100%; display: block; border-radius: 12px; }
