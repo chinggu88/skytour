@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getInquiry, createInquiry, updateInquiry, hashPassword } from '../lib/inquiries'
+import { notifyInquiry } from '../lib/notify'
 
 const initial = {
   date: '',
@@ -70,6 +71,9 @@ export default function ContactWrite() {
       } else {
         const newHash = await hashPassword(password)
         await createInquiry(form, newHash)
+        // 신규 등록 시에만 이메일 알림 (수정 시에는 보내지 않음).
+        // 알림 실패가 등록을 실패시키지 않는다.
+        await notifyInquiry(form)
       }
       navigate('/contact')
     } catch (err) {
