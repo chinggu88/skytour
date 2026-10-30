@@ -1,6 +1,6 @@
 import { SUPABASE_URL, SUPABASE_KEY } from './supabase'
 
-const BASE = `${SUPABASE_URL}/rest/v1/inquiries`
+const BASE = `${SUPABASE_URL}/rest/v1/skytour_inquiries`
 
 function headers(extra = {}) {
   return {
