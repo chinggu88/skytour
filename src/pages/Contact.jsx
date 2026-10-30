@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { loadInquiries, deleteInquiry, maskContact } from '../lib/inquiries'
+import { loadInquiries, deleteInquiry, hashPassword, maskContact } from '../lib/inquiries'
 
 export default function Contact() {
   const [inquiries, setInquiries] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [pendingDelete, setPendingDelete] = useState(null)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteError, setDeleteError] = useState('')
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     loadInquiries()
@@ -14,13 +18,25 @@ export default function Contact() {
       .finally(() => setLoading(false))
   }, [])
 
-  const remove = async (id, name) => {
-    if (!window.confirm(`${name ? `${name}님의 ` : ''}견적 문의를 삭제할까요?`)) return
+  const confirmDelete = async (item) => {
+    setDeleteError('')
+    setDeleting(true)
     try {
-      await deleteInquiry(id)
-      setInquiries(inquiries.filter((item) => item.id !== id))
+      if (item.password_hash) {
+        const hash = await hashPassword(deletePassword)
+        if (hash !== item.password_hash) {
+          setDeleteError('비밀번호가 맞지 않습니다.')
+          return
+        }
+      }
+      await deleteInquiry(item.id)
+      setInquiries(inquiries.filter((x) => x.id !== item.id))
+      setPendingDelete(null)
+      setDeletePassword('')
     } catch (e) {
-      setError(e.message)
+      setDeleteError(e.message)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -38,6 +54,7 @@ export default function Contact() {
 
       <p className="note">
         이 목록은 Supabase에 저장됩니다. 연락처는 화면에서 마스킹해서 보여줍니다.
+        수정·삭제에는 글쓴이가 정한 비밀번호가 필요합니다.
       </p>
 
       {loading && <p>목록을 불러오는 중입니다...</p>}
@@ -71,10 +88,32 @@ export default function Contact() {
                 연락처 {maskContact(item.contact)}
                 {item.createdAt && ` · 등록 ${new Date(item.createdAt).toLocaleDateString('ko-KR')}`}
               </p>
-              <div className="row-actions">
-                <Link className="button" to={`/contact/write/${item.id}`}>수정</Link>
-                <button className="button" type="button" onClick={() => remove(item.id, item.name)}>삭제</button>
-              </div>
+              {pendingDelete?.id === item.id ? (
+                <div>
+                  <label>
+                    글 비밀번호
+                    <input
+                      type="password"
+                      value={deletePassword}
+                      onChange={(e) => setDeletePassword(e.target.value)}
+                      placeholder="글쓴이 비밀번호"
+                      style={{ padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 8, marginTop: 6, width: '100%' }}
+                    />
+                  </label>
+                  {deleteError && <p className="note">{deleteError}</p>}
+                  <div className="row-actions">
+                    <button className="button primary" type="button" disabled={deleting} onClick={() => confirmDelete(item)}>
+                      {deleting ? '삭제 중...' : '삭제 확인'}
+                    </button>
+                    <button className="button" type="button" onClick={() => { setPendingDelete(null); setDeletePassword(''); setDeleteError('') }}>취소</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="row-actions">
+                  <Link className="button" to={`/contact/write/${item.id}`}>수정</Link>
+                  <button className="button" type="button" onClick={() => { setPendingDelete(item); setDeletePassword(''); setDeleteError('') }}>삭제</button>
+                </div>
+              )}
             </article>
           ))}
         </div>
