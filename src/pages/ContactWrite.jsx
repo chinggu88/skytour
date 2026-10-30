@@ -59,7 +59,7 @@ export default function ContactWrite() {
       {error && (
         <div className="card">
           <h2>저장하지 못했습니다.</h2>
-          <p>Supabase에 inquiries 테이블과 등록 정책이 아직 만들어지지 않았을 수 있습니다. SQL을 실행한 뒤 다시 시도해 주세요.</p>
+          <p>Supabase에 skytour_inquiries 테이블과 등록 정책이 아직 만들어지지 않았을 수 있습니다. SQL을 실행한 뒤 다시 시도해 주세요.</p>
           <p className="note">{error}</p>
         </div>
       )}
