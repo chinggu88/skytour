@@ -1,15 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { loadInquiries, saveInquiries } from '../lib/inquiries'
+import { loadInquiries, deleteInquiry, maskContact } from '../lib/inquiries'
 
 export default function Contact() {
-  const [inquiries, setInquiries] = useState(() => loadInquiries())
+  const [inquiries, setInquiries] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const remove = (id, name) => {
+  useEffect(() => {
+    loadInquiries()
+      .then(setInquiries)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const remove = async (id, name) => {
     if (!window.confirm(`${name ? `${name}님의 ` : ''}견적 문의를 삭제할까요?`)) return
-    const next = inquiries.filter((item) => item.id !== id)
-    saveInquiries(next)
-    setInquiries(next)
+    try {
+      await deleteInquiry(id)
+      setInquiries(inquiries.filter((item) => item.id !== id))
+    } catch (e) {
+      setError(e.message)
+    }
   }
 
   return (
@@ -25,17 +37,27 @@ export default function Contact() {
       </div>
 
       <p className="note">
-        아직 담당자 연락처·서버 연동이 확정되지 않아, 이 목록은 실제 발송이 아닌
-        이 브라우저에만 저장되는 목록입니다. 다른 기기나 회사에서는 보이지 않습니다.
+        이 목록은 Supabase에 저장됩니다. 연락처는 화면에서 마스킹해서 보여줍니다.
       </p>
 
-      {inquiries.length === 0 ? (
+      {loading && <p>목록을 불러오는 중입니다...</p>}
+      {error && (
+        <div className="card">
+          <h2>목록을 불러오지 못했습니다.</h2>
+          <p>Supabase에 inquiries 테이블과 조회 정책이 아직 만들어지지 않았을 수 있습니다. SQL을 실행한 뒤 새로고침해 주세요.</p>
+          <p className="note">{error}</p>
+        </div>
+      )}
+
+      {!loading && !error && inquiries.length === 0 && (
         <div className="card">
           <h2>아직 등록된 문의가 없습니다.</h2>
           <p>글쓰기 버튼을 눌러 첫 견적 문의를 남겨보세요.</p>
           <p><Link to="/contact/write">글쓰기로 이동 →</Link></p>
         </div>
-      ) : (
+      )}
+
+      {!loading && !error && inquiries.length > 0 && (
         <div className="inquiry-list">
           {inquiries.map((item) => (
             <article className="card inquiry-card" key={item.id}>
@@ -46,7 +68,7 @@ export default function Contact() {
               </p>
               {item.message && <p>{item.message}</p>}
               <p className="note">
-                연락처 {item.contact || '미입력'}
+                연락처 {maskContact(item.contact)}
                 {item.createdAt && ` · 등록 ${new Date(item.createdAt).toLocaleDateString('ko-KR')}`}
               </p>
               <div className="row-actions">
