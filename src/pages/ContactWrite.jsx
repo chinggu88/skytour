@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { loadInquiries, saveInquiries, getInquiry } from '../lib/inquiries'
+import { getInquiry, createInquiry, updateInquiry } from '../lib/inquiries'
 
 const initial = {
   date: '',
@@ -15,30 +15,54 @@ const initial = {
 export default function ContactWrite() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const editing = getInquiry(id)
-  const [form, setForm] = useState(editing ? { ...initial, ...editing } : initial)
+  const [form, setForm] = useState(initial)
+  const [loading, setLoading] = useState(!!id)
+  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (!id) return
+    getInquiry(id)
+      .then((item) => { if (item) setForm(item) })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [id])
 
   const change = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
-    const list = loadInquiries()
-    if (editing) {
-      saveInquiries(list.map((item) => (item.id === id ? { ...item, ...form } : item)))
-    } else {
-      saveInquiries([{ ...form, id: String(Date.now()), createdAt: new Date().toISOString() }, ...list])
+    setError('')
+    setSaving(true)
+    try {
+      if (id) await updateInquiry(id, form)
+      else await createInquiry(form)
+      navigate('/contact')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSaving(false)
     }
-    navigate('/contact')
   }
+
+  if (loading) return <section className="page"><p>문의 내용을 불러오는 중입니다...</p></section>
 
   return (
     <section className="page">
-      <h1>{editing ? '견적 문의 수정' : '견적 문의 글쓰기'}</h1>
+      <h1>{id ? '견적 문의 수정' : '견적 문의 글쓰기'}</h1>
       <p className="lead">
         날짜·인원·지역·차종을 알려주시면 견적 문의를 정리해 드립니다.
       </p>
+
+      {error && (
+        <div className="card">
+          <h2>저장하지 못했습니다.</h2>
+          <p>Supabase에 inquiries 테이블과 등록 정책이 아직 만들어지지 않았을 수 있습니다. SQL을 실행한 뒤 다시 시도해 주세요.</p>
+          <p className="note">{error}</p>
+        </div>
+      )}
 
       <form className="form" onSubmit={submit}>
         <label>
@@ -76,12 +100,11 @@ export default function ContactWrite() {
           <textarea name="message" value={form.message} onChange={change} rows="4" placeholder="일정, 짐, 추가 요청 사항 등" />
         </label>
         <div className="row-actions">
-          <button className="button primary" type="submit">{editing ? '수정하기' : '등록하기'}</button>
+          <button className="button primary" type="submit" disabled={saving}>{saving ? '저장 중...' : id ? '수정하기' : '등록하기'}</button>
           <button className="button" type="button" onClick={() => navigate('/contact')}>목록으로</button>
         </div>
         <p className="note">
-          아직 담당자 연락처·서버 연동이 확정되지 않아, 이 글은 실제 발송이 아닌
-          이 브라우저에만 저장됩니다.
+          이 글은 Supabase에 저장되어 회사에서도 확인할 수 있습니다.
         </p>
       </form>
     </section>
