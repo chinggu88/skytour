@@ -11,8 +11,17 @@ function headers(extra = {}) {
   }
 }
 
-function toDb(form) {
-  return {
+// 비밀번호는 평문으로 저장하지 않고 SHA-256 해시로 저장합니다.
+export async function hashPassword(password) {
+  const data = new TextEncoder().encode(password)
+  const digest = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+function toDb(form, passwordHash) {
+  const row = {
     use_date: form.date || null,
     people: form.people ? parseInt(form.people, 10) : null,
     region: form.region,
@@ -21,6 +30,8 @@ function toDb(form) {
     contact: form.contact,
     message: form.message || null,
   }
+  if (passwordHash) row.password_hash = passwordHash
+  return row
 }
 
 function fromDb(row) {
@@ -33,6 +44,7 @@ function fromDb(row) {
     name: row.name || '',
     contact: row.contact || '',
     message: row.message || '',
+    password_hash: row.password_hash || null,
     createdAt: row.created_at,
   }
 }
@@ -57,21 +69,21 @@ export async function getInquiry(id) {
   return rows[0] ? fromDb(rows[0]) : null
 }
 
-export async function createInquiry(form) {
+export async function createInquiry(form, passwordHash) {
   const res = await check(await fetch(BASE, {
     method: 'POST',
     headers: headers({ Prefer: 'return=representation' }),
-    body: JSON.stringify(toDb(form)),
+    body: JSON.stringify(toDb(form, passwordHash)),
   }))
   const rows = await res.json()
   return fromDb(rows[0])
 }
 
-export async function updateInquiry(id, form) {
+export async function updateInquiry(id, form, passwordHash) {
   const res = await check(await fetch(`${BASE}?id=eq.${id}`, {
     method: 'PATCH',
     headers: headers({ Prefer: 'return=representation' }),
-    body: JSON.stringify(toDb(form)),
+    body: JSON.stringify(toDb(form, passwordHash)),
   }))
   const rows = await res.json()
   return fromDb(rows[0])
