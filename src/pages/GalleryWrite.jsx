@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   getGalleryPost, createGalleryPost, updateGalleryPost, uploadGalleryPhoto, hashPassword,
@@ -11,6 +11,9 @@ export default function GalleryWrite() {
   const navigate = useNavigate()
   const [form, setForm] = useState(initial)
   const [file, setFile] = useState(null)
+  const [showUrl, setShowUrl] = useState(false)
+  const [fontLarge, setFontLarge] = useState(false)
+  const [showSendMenu, setShowSendMenu] = useState(false)
   const [storedHash, setStoredHash] = useState(null)
   const [verified, setVerified] = useState(!id)
   const [verifyPassword, setVerifyPassword] = useState('')
@@ -19,6 +22,8 @@ export default function GalleryWrite() {
   const [loading, setLoading] = useState(!!id)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+  const fileRef = useRef(null)
+  const bodyRef = useRef(null)
 
   useEffect(() => {
     if (!id) return
@@ -26,6 +31,7 @@ export default function GalleryWrite() {
       .then((item) => {
         if (item) {
           setForm({ title: item.title, description: item.description, photo_url: item.photo_url })
+          if (item.photo_url) setShowUrl(true)
           setStoredHash(item.password_hash)
           if (!item.password_hash) setVerified(true)
         }
@@ -44,6 +50,16 @@ export default function GalleryWrite() {
     const hash = await hashPassword(verifyPassword)
     if (hash === storedHash) setVerified(true)
     else setVerifyError('비밀번호가 맞지 않습니다.')
+  }
+
+  const insertEmoji = () => {
+    const el = bodyRef.current
+    if (!el) return
+    const start = el.selectionStart ?? form.description.length
+    const end = el.selectionEnd ?? form.description.length
+    const next = `${form.description.slice(0, start)}😊${form.description.slice(end)}`
+    setForm({ ...form, description: next })
+    setTimeout(() => { el.focus(); el.setSelectionRange(start + 2, start + 2) }, 0)
   }
 
   const submit = async (e) => {
@@ -95,7 +111,6 @@ export default function GalleryWrite() {
   return (
     <section className="page">
       <h1>{id ? '갤러리 게시글 수정' : '갤러리 글쓰기'}</h1>
-      <p className="lead">사진과 글을 함께 올려 홍보용 갤러리 게시글을 만듭니다.</p>
 
       {error && (
         <div className="card">
@@ -105,47 +120,108 @@ export default function GalleryWrite() {
         </div>
       )}
 
-      <form className="form" onSubmit={submit}>
-        <label>
-          제목
-          <input type="text" name="title" value={form.title} onChange={change} placeholder="예: 단정한 첫인상이 곧 신뢰입니다" required />
-        </label>
-        <label>
-          설명
-          <textarea name="description" value={form.description} onChange={change} rows="4" placeholder="사진에 대한 설명, 홍보 문구 등" />
-        </label>
-        <label>
-          사진 파일
-          <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0] || null)} />
-        </label>
-        {file && <p className="note">선택한 파일: {file.name} (저장 시 업로드됩니다)</p>}
-        <label>
-          사진 URL (파일 대신 URL을 쓸 때)
-          <input type="text" name="photo_url" value={form.photo_url} onChange={change} placeholder="https://..." />
-        </label>
-        {form.photo_url && !file && (
-          <p><img src={form.photo_url} alt="선택한 사진 미리보기" style={{ maxWidth: '100%', borderRadius: 12 }} /></p>
-        )}
-        <label>
-          {id ? '새 비밀번호 (비워두면 기존 유지)' : '글 비밀번호'}
+      <form className="mail-compose" onSubmit={submit}>
+        <input
+          className="mail-title"
+          type="text"
+          name="title"
+          value={form.title}
+          onChange={change}
+          placeholder="제목"
+          required
+        />
+
+        <div className="mail-password-row">
+          <label htmlFor="gallery-password">글 비밀번호</label>
           <input
+            id="gallery-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required={!id}
             minLength={4}
-            placeholder={id ? '변경할 때만 입력' : '수정·삭제 시 필요합니다'}
+            placeholder={id ? '변경할 때만 입력 (비워두면 기존 유지)' : '수정·삭제 시 필요합니다'}
           />
-        </label>
-        <div className="row-actions">
-          <button className="button primary" type="submit" disabled={saving}>{saving ? '저장 중...' : id ? '수정하기' : '등록하기'}</button>
-          <button className="button" type="button" onClick={() => navigate('/gallery')}>목록으로</button>
         </div>
-        <p className="note">
-          사진은 Supabase Storage에 저장되고, 글은 Supabase에 저장됩니다.
-          비밀번호는 해시로 저장되며, 분실 시 복구할 수 없습니다.
-        </p>
+
+        <textarea
+          ref={bodyRef}
+          className={`mail-body ${fontLarge ? 'large' : ''}`}
+          name="description"
+          value={form.description}
+          onChange={change}
+          placeholder="내용을 입력하세요"
+        />
+
+        {showUrl && (
+          <input
+            className="mail-url"
+            type="text"
+            name="photo_url"
+            value={form.photo_url}
+            onChange={change}
+            placeholder="사진 URL (https://...)"
+          />
+        )}
+
+        {(file || form.photo_url) && (
+          <div className="mail-photo-preview">
+            {file ? (
+              <span>첨부된 사진: {file.name}</span>
+            ) : (
+              <img src={form.photo_url} alt="선택한 사진 미리보기" />
+            )}
+            <button
+              type="button"
+              className="button"
+              onClick={() => { setFile(null); setForm({ ...form, photo_url: '' }); setShowUrl(false) }}
+            >
+              사진 제거
+            </button>
+          </div>
+        )}
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={(e) => setFile(e.target.files[0] || null)}
+        />
+
+        <div className="mail-toolbar">
+          <span className="mail-send-group">
+            <button className="mail-send" type="submit" disabled={saving}>
+              {saving ? '보내는 중...' : '보내기'}
+            </button>
+            <button
+              className="mail-send-arrow"
+              type="button"
+              aria-label="보내기 옵션"
+              onClick={() => setShowSendMenu(!showSendMenu)}
+            >
+              ▾
+            </button>
+          </span>
+          {showSendMenu && (
+            <span className="mail-send-menu">
+              <button type="button" onClick={() => navigate('/gallery')}>목록으로</button>
+            </span>
+          )}
+          <button className="mail-icon-btn" type="button" title="글자 크기" onClick={() => setFontLarge(!fontLarge)}>Aa</button>
+          <button className="mail-icon-btn" type="button" title="사진 첨부" onClick={() => fileRef.current?.click()}>📎</button>
+          <button className="mail-icon-btn" type="button" title="사진 URL" onClick={() => setShowUrl(!showUrl)}>🔗</button>
+          <button className="mail-icon-btn" type="button" title="이모지 삽입" onClick={insertEmoji}>😊</button>
+          <button className="mail-icon-btn" type="button" title="사진 첨부" onClick={() => fileRef.current?.click()}>🖼️</button>
+          <span className="mail-spacer" />
+          <button className="mail-icon-btn" type="button" title="작성 취소" onClick={() => navigate('/gallery')}>🗑️</button>
+        </div>
       </form>
+
+      <p className="note">
+        사진은 Supabase Storage에 저장되고, 글은 Supabase에 저장됩니다.
+        비밀번호는 해시로 저장되며, 분실 시 복구할 수 없습니다.
+      </p>
     </section>
   )
 }
