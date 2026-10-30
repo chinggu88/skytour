@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getInquiry, createInquiry, updateInquiry } from '../lib/inquiries'
+import { getInquiry, createInquiry, updateInquiry, hashPassword } from '../lib/inquiries'
 
 const initial = {
   date: '',
@@ -16,6 +16,11 @@ export default function ContactWrite() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [form, setForm] = useState(initial)
+  const [storedHash, setStoredHash] = useState(null)
+  const [verified, setVerified] = useState(!id)
+  const [verifyPassword, setVerifyPassword] = useState('')
+  const [verifyError, setVerifyError] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(!!id)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -23,7 +28,21 @@ export default function ContactWrite() {
   useEffect(() => {
     if (!id) return
     getInquiry(id)
-      .then((item) => { if (item) setForm(item) })
+      .then((item) => {
+        if (item) {
+          setForm({
+            date: item.date,
+            people: item.people,
+            region: item.region,
+            vehicle: item.vehicle,
+            name: item.name,
+            contact: item.contact,
+            message: item.message,
+          })
+          setStoredHash(item.password_hash)
+          if (!item.password_hash) setVerified(true)
+        }
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [id])
@@ -32,13 +51,26 @@ export default function ContactWrite() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
+  const verify = async (e) => {
+    e.preventDefault()
+    setVerifyError('')
+    const hash = await hashPassword(verifyPassword)
+    if (hash === storedHash) setVerified(true)
+    else setVerifyError('비밀번호가 맞지 않습니다.')
+  }
+
   const submit = async (e) => {
     e.preventDefault()
     setError('')
     setSaving(true)
     try {
-      if (id) await updateInquiry(id, form)
-      else await createInquiry(form)
+      if (id) {
+        const newHash = password ? await hashPassword(password) : null
+        await updateInquiry(id, form, newHash)
+      } else {
+        const newHash = await hashPassword(password)
+        await createInquiry(form, newHash)
+      }
       navigate('/contact')
     } catch (err) {
       setError(err.message)
@@ -48,6 +80,27 @@ export default function ContactWrite() {
   }
 
   if (loading) return <section className="page"><p>문의 내용을 불러오는 중입니다...</p></section>
+
+  if (id && !verified) {
+    return (
+      <section className="page">
+        <h1>견적 문의 수정</h1>
+        <p className="lead">수정하려면 글쓴이 비밀번호를 입력해 주세요.</p>
+        <form className="form" onSubmit={verify}>
+          <label>
+            글 비밀번호
+            <input type="password" value={verifyPassword} onChange={(e) => setVerifyPassword(e.target.value)} required />
+          </label>
+          {verifyError && <p className="note">{verifyError}</p>}
+          <div className="row-actions">
+            <button className="button primary" type="submit">확인</button>
+            <button className="button" type="button" onClick={() => navigate('/contact')}>목록으로</button>
+          </div>
+          <p className="note">비밀번호를 잊어버리셨다면 회사에 직접 연락해 주세요. 비밀번호는 복구할 수 없습니다.</p>
+        </form>
+      </section>
+    )
+  }
 
   return (
     <section className="page">
@@ -99,12 +152,24 @@ export default function ContactWrite() {
           요청 사항
           <textarea name="message" value={form.message} onChange={change} rows="4" placeholder="일정, 짐, 추가 요청 사항 등" />
         </label>
+        <label>
+          {id ? '새 비밀번호 (비워두면 기존 유지)' : '글 비밀번호'}
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required={!id}
+            minLength={4}
+            placeholder={id ? '변경할 때만 입력' : '수정·삭제 시 필요합니다'}
+          />
+        </label>
         <div className="row-actions">
           <button className="button primary" type="submit" disabled={saving}>{saving ? '저장 중...' : id ? '수정하기' : '등록하기'}</button>
           <button className="button" type="button" onClick={() => navigate('/contact')}>목록으로</button>
         </div>
         <p className="note">
           이 글은 Supabase에 저장되어 회사에서도 확인할 수 있습니다.
+          비밀번호는 해시로 저장되며, 분실 시 복구할 수 없습니다.
         </p>
       </form>
     </section>
