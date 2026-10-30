@@ -97,13 +97,15 @@ export default function Gallery() {
         <div className="gallery">
           {posts.map((post) => (
             <figure className="gallery-item" key={post.id}>
-              {post.photo_url ? (
-                <img src={post.photo_url} alt={post.title} />
-              ) : (
-                <div className="gallery-placeholder">사진 없음</div>
-              )}
+              <Link to={`/gallery/${post.id}`}>
+                {post.photo_url ? (
+                  <img src={post.photo_url} alt={post.title} />
+                ) : (
+                  <div className="gallery-placeholder">사진 없음</div>
+                )}
+              </Link>
               <figcaption>
-                <strong>{post.title}</strong>
+                <Link to={`/gallery/${post.id}`}><strong>{post.title}</strong></Link>
                 <span>{post.description}</span>
                 {post.createdAt && (
                   <span className="note">등록 {new Date(post.createdAt).toLocaleDateString('ko-KR')}</span>
