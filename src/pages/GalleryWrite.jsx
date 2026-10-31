@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   getGalleryPost, createGalleryPost, updateGalleryPost, uploadGalleryPhoto, hashPassword,
+  checkWritePassword, isWriteUnlocked, unlockWrite,
 } from '../lib/gallery'
 
 const initial = { title: '', description: '', photo_url: '' }
@@ -19,6 +20,9 @@ export default function GalleryWrite() {
   const [verifyPassword, setVerifyPassword] = useState('')
   const [verifyError, setVerifyError] = useState('')
   const [password, setPassword] = useState('')
+  const [writeUnlocked, setWriteUnlocked] = useState(() => isWriteUnlocked())
+  const [writeGatePassword, setWriteGatePassword] = useState('')
+  const [writeGateError, setWriteGateError] = useState('')
   const [loading, setLoading] = useState(!!id)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -42,6 +46,17 @@ export default function GalleryWrite() {
 
   const change = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const verifyWriteGate = async (e) => {
+    e.preventDefault()
+    setWriteGateError('')
+    if (await checkWritePassword(writeGatePassword)) {
+      unlockWrite()
+      setWriteUnlocked(true)
+    } else {
+      setWriteGateError('비밀번호가 맞지 않습니다.')
+    }
   }
 
   const verify = async (e) => {
@@ -86,6 +101,27 @@ export default function GalleryWrite() {
   }
 
   if (loading) return <section className="page"><p>게시글을 불러오는 중입니다...</p></section>
+
+  if (!id && !writeUnlocked) {
+    return (
+      <section className="page">
+        <h1>갤러리 글쓰기</h1>
+        <p className="lead">글쓰기는 회사 관계자만 가능합니다. 글쓰기 비밀번호를 입력해 주세요.</p>
+        <form className="form" onSubmit={verifyWriteGate}>
+          <label>
+            글쓰기 비밀번호
+            <input type="password" value={writeGatePassword} onChange={(e) => setWriteGatePassword(e.target.value)} required />
+          </label>
+          {writeGateError && <p className="note">{writeGateError}</p>}
+          <div className="row-actions">
+            <button className="button primary" type="submit">확인</button>
+            <button className="button" type="button" onClick={() => navigate('/gallery')}>목록으로</button>
+          </div>
+          <p className="note">비밀번호를 모르시면 회사에 직접 연락해 주세요.</p>
+        </form>
+      </section>
+    )
+  }
 
   if (id && !verified) {
     return (
