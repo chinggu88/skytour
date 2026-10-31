@@ -104,3 +104,16 @@ export async function uploadGalleryPhoto(file) {
   }
   return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`
 }
+
+// 갤러리 글쓰기 공통 비밀번호 (간단 버전: 화면상 문턱용, 해시만 저장)
+// 기본 비밀번호는 skytour2026. 바꾸려면 이 해시를 새 비밀번호의 SHA-256으로 교체.
+export const WRITE_PASSWORD_HASH = '48b0dc51aa9bc7cee00725b0211b2b737e6e259c1cf3d453422e857488546c04'
+export function isWriteUnlocked() {
+  try { return sessionStorage.getItem('skytour-write-unlocked') === '1' } catch { return false }
+}
+export function unlockWrite() {
+  try { sessionStorage.setItem('skytour-write-unlocked', '1') } catch { /* ignore */ }
+}
+export async function checkWritePassword(password) {
+  return (await hashPassword(password)) === WRITE_PASSWORD_HASH
+}
