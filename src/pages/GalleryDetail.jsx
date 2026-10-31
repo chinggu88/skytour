@@ -125,11 +125,6 @@ export default function GalleryDetail() {
         </div>
       )}
 
-      <section className="section">
-        <h2>댓글</h2>
-        <p className="note">아직 댓글이 없습니다. 댓글 작성 기능은 다음 단계에서 연결할 수 있습니다.</p>
-      </section>
-
       <p><Link to="/gallery">← 갤러리 목록으로</Link></p>
     </section>
   )
