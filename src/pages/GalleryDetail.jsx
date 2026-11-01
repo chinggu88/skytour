@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getGalleryPost, deleteGalleryPost, hashPassword } from '../lib/gallery'
+import { DetailSkeleton } from '../components/Skeleton'
 
 export default function GalleryDetail() {
   const { id } = useParams()
@@ -41,7 +42,7 @@ export default function GalleryDetail() {
     }
   }
 
-  if (loading) return <section className="page"><p>게시글을 불러오는 중입니다...</p></section>
+  if (loading) return <section className="page detail"><DetailSkeleton /></section>
   if (error) {
     return (
       <section className="page">
