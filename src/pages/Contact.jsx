@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { loadInquiries, deleteInquiry, hashPassword, maskContact } from '../lib/inquiries'
+import { InquirySkeleton } from '../components/Skeleton'
 
 export default function Contact() {
   const [inquiries, setInquiries] = useState([])
@@ -57,7 +58,7 @@ export default function Contact() {
         수정·삭제에는 글쓴이가 정한 비밀번호가 필요합니다.
       </p>
 
-      {loading && <p>목록을 불러오는 중입니다...</p>}
+      {loading && <InquirySkeleton />}
       {error && (
         <div className="card">
           <h2>목록을 불러오지 못했습니다.</h2>
