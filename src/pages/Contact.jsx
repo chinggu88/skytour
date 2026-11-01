@@ -50,20 +50,6 @@ export default function Contact() {
         <Link className="button primary" to="/contact/write">글쓰기</Link>
       </div>
 
-      <div className="card">
-        <h2>견적 문의, 이렇게 남기세요</h2>
-        <ol>
-          <li>날짜·인원·지역만 정하세요 — 차종을 몰라도 돼요. 폼에서 "차종 미정"을 고르면 돼요.</li>
-          <li>글쓰기 버튼을 누르고 폼을 채우세요 — 로그인은 필요 없어요.</li>
-          <li>연락처를 남기면 끝이에요. 목록에는 연락처가 마스킹되어 보여요.</li>
-        </ol>
-        <p><strong>미리 정해두면 좋은 것:</strong> 이용 날짜 / 인원 / 출발지 → 목적지 / 희망 차종 / 이름·연락처 / 요청 사항(일정, 짐, 추가 요청)</p>
-        <p><strong>예시:</strong> 11월 20일, 25명, 인천공항 → 서울, 유니버스 희망, 짐 많음</p>
-      </div>
-
-      <p className="note">
-        수정·삭제에는 글쓴이 비밀번호가 필요하고, 비밀번호는 복구할 수 없어요.
-      </p>
 
       {loading && <InquirySkeleton />}
       {error && (
