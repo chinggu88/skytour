@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { loadGalleryPosts, deleteGalleryPost, hashPassword, checkWritePassword, unlockWrite } from '../lib/gallery'
+import { GallerySkeleton } from '../components/Skeleton'
 
 export default function Gallery() {
   const navigate = useNavigate()
@@ -95,7 +96,7 @@ export default function Gallery() {
         </form>
       )}
 
-      {loading && <p>게시글을 불러오는 중입니다...</p>}
+      {loading && <GallerySkeleton />}
       {error && (
         <div className="card">
           <h2>게시글을 불러오지 못했습니다.</h2>
