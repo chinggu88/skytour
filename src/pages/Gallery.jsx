@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { loadGalleryPosts, deleteGalleryPost, hashPassword, checkWritePassword, unlockWrite } from '../lib/gallery'
+import { Link } from 'react-router-dom'
+import { loadGalleryPosts, deleteGalleryPost, hashPassword } from '../lib/gallery'
 import { GallerySkeleton } from '../components/Skeleton'
 
 export default function Gallery() {
-  const navigate = useNavigate()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -12,10 +11,6 @@ export default function Gallery() {
   const [deletePassword, setDeletePassword] = useState('')
   const [deleteError, setDeleteError] = useState('')
   const [deleting, setDeleting] = useState(false)
-  const [showWriteGate, setShowWriteGate] = useState(false)
-  const [writePassword, setWritePassword] = useState('')
-  const [writeError, setWriteError] = useState('')
-  const [writeChecking, setWriteChecking] = useState(false)
 
   useEffect(() => {
     loadGalleryPosts()
@@ -23,24 +18,6 @@ export default function Gallery() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
-
-  const confirmWrite = async (e) => {
-    e.preventDefault()
-    setWriteError('')
-    setWriteChecking(true)
-    try {
-      if (await checkWritePassword(writePassword)) {
-        unlockWrite()
-        navigate('/gallery/write')
-      } else {
-        setWriteError('비밀번호가 맞지 않습니다.')
-      }
-    } catch (err) {
-      setWriteError(err.message)
-    } finally {
-      setWriteChecking(false)
-    }
-  }
 
   const confirmDelete = async (item) => {
     setDeleteError('')
@@ -71,30 +48,8 @@ export default function Gallery() {
           <h2>갤러리 게시글</h2>
           <p className="lead">사진과 글로 올린 홍보 게시글입니다.</p>
         </div>
-        <button className="button primary" type="button" onClick={() => { setShowWriteGate(true); setWritePassword(''); setWriteError('') }}>글쓰기</button>
+        <Link className="button primary" to="/gallery/write">글쓰기</Link>
       </div>
-
-      {showWriteGate && (
-        <form className="card" onSubmit={confirmWrite}>
-          <h2>글쓰기 비밀번호</h2>
-          <p>글쓰기는 회사 관계자만 가능합니다. 글쓰기 비밀번호를 입력해 주세요.</p>
-          <input
-            type="password"
-            value={writePassword}
-            onChange={(e) => setWritePassword(e.target.value)}
-            placeholder="글쓰기 비밀번호"
-            style={{ padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 8, width: '100%' }}
-            required
-          />
-          {writeError && <p className="note">{writeError}</p>}
-          <span className="row-actions">
-            <button className="button primary" type="button" disabled={writeChecking} onClick={confirmWrite}>
-              {writeChecking ? '확인 중...' : '확인'}
-            </button>
-            <button className="button" type="button" onClick={() => setShowWriteGate(false)}>취소</button>
-          </span>
-        </form>
-      )}
 
       {loading && <GallerySkeleton />}
       {error && (
@@ -109,7 +64,7 @@ export default function Gallery() {
         <div className="card">
           <h2>아직 등록된 게시글이 없습니다.</h2>
           <p>글쓰기 버튼을 눌러 첫 게시글을 남겨보세요.</p>
-          <p><button className="button primary" type="button" onClick={() => { setShowWriteGate(true); setWritePassword(''); setWriteError('') }}>글쓰기로 이동 →</button></p>
+          <p><Link to="/gallery/write">글쓰기로 이동 →</Link></p>
         </div>
       )}
 
