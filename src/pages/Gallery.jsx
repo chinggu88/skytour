@@ -114,14 +114,6 @@ export default function Gallery() {
         </div>
       )}
 
-      <section className="section cta">
-        <h2>이 현장 그대로, 투어를 맡겨보세요</h2>
-        <p>
-          <Link className="button primary" to="/contact">견적 문의하기</Link>
-          {' '}
-          <Link className="button" to="/story">브랜드 스토리 보기</Link>
-        </p>
-      </section>
     </section>
   )
 }
