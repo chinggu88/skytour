@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 
 const steps = [
   '서류 심사',
@@ -40,11 +39,6 @@ export default function Recruitment() {
         의뢰사 확인 후 최종 확정합니다.
       </p>
 
-      <section className="section cta">
-        <h2>지원 문의</h2>
-        <p>채용 관련 문의는 견적 문의 폼의 요청 사항에 ‘채용 문의’라고 적어 보내주세요.</p>
-        <Link className="button primary" to="/contact">문의하기</Link>
-      </section>
     </section>
   )
 }
