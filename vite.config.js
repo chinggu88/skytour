@@ -1,1 +1,8 @@
-aW1wb3J0IHsgZGVmaW5lQ29uZmlnIH0gZnJvbSAndml0ZSdCBpbXBvcnQgcmVhY3QgZnJvbSAnQHZpdGVqcy9wbHVnaW4tcmVhY3QnCgovLyBodHRwczovL3ZpdGUuZGV2L2NvbmZpZy8KZXhwb3J0IGRlZmF1bHQgZGVmaW5lQ29uZmlnKHsKICBwbHVnaW5zOiBbcmVhY3QoKV0sCiAgYmFzZTogJy8nLCAvLyDijIgbM2oOq4sOyaq8CDruKzrgpjrk5HsnbTshKDquYjO2KuOuqpOyGjC5hOyImSDriYjriqg0qQg7Yqg6q6gCgp9KQo=
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  base: '/',
+})
